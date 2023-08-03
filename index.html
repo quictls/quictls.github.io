@@ -23,7 +23,7 @@ This fork is intended as stopgap solution to enable higher level frameworks and 
 <p>This fork can be considered a supported version of <a href="https://github.com/openssl/openssl/pull/8797">OpenSSL PR 8797</a>. We will endeavor to track OpenSSL releases within a day or so, and there is an item below about how we'll follow their tagging.</p>
 <p>On to the questions and answers.</p>
 <h2 id="what-about-branches">What about branches?</h2>
-<p>We don't want to conflict with OpenSSL branch names. Our current plan is to append <code>+quic</code>. Release tags are likely to be the QUIC branch with <code>-releaseX</code> appended. For example, the OpenSSL tag <code>openssl-3.0.0-alpha12</code> would have a branch named <code>openssl-3.0.0-alpha12+quic</code> and a release tag of <code>openssl-3.0.0-alpha12+quic-release1</code></p>
+<p>We don't want to conflict with OpenSSL branch names. Our plan is to append <code>+quic</code> to upstream tag names to create our branches. Release tags will be the upstream tag name with <code>-quic1</code> appended (where <code>1</code> will be the incrementing release number). For example, the OpenSSL tag <code>openssl-3.0.10</code> would have a branch named <code>openssl-3.0.10+quic</code> and a first release tag of <code>openssl-3.0.10-quic1</code>. Please note that this is <i>not</i> compatible with semantic versioning, as any version with a <code>-value</code> suffix is sorted before the version (i.e. <code>openssl-3.0.10-quic1</code> &lt; <code>openssl-3.0.10</code>). Using a <code>+</code> can remediate thie, but some release tools don't like the <code>+</code>.</p>
 <h2 id="how-are-you-keeping-current-with-openssl">How are you keeping current with OpenSSL?</h2>
 <p>(In other words, &quot;What about rebasing?&quot;)</p>
 <p>Our plan is to always rebase on top of an upstream release tag. In particular:</p>
@@ -33,7 +33,7 @@ This fork is intended as stopgap solution to enable higher level frameworks and 
 <li>The use of git commands (such as <code>cherry</code>) can be used to ensure that all changes have moved forward with minimal or no changes. You will be able to see &quot;QUIC: Add X&quot; on all branches and the commit itself will be nearly identical on all branches, and any changes to that can be easily identified.</li>
 </ul>
 <h2 id="what-about-library-names">What about library names?</h2>
-<p>Library names will be the same, but will use a different version number. The version numbers for the current OpenSSL libraries are <code>1.1</code> (for the 1.1.0 and 1.1.1 branches) and <code>3</code> (for the to-be-3.0 branch). We will be prefixing 81 (ASCII for 'Q') to the version numbers to generate a unique version number.</p>
+<p>Library names will be the same, but will use a different version number. The version numbers for the current OpenSSL libraries are <code>1.1</code> (for the 1.1.0 and 1.1.1 branches) and <code>3</code> (for the 3.0 branch). We will be prefixing 81 (ASCII for 'Q') to the version numbers to generate a unique version number.</p>
 <ul>
 <li>libcrypto.so.81.3 vs libcrypto.so.3</li>
 <li>libcrypto.so.81.1.1 vs libcrypto.so.1.1</li>
