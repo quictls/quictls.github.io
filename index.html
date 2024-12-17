@@ -1,54 +1,128 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content=
+  "HTML Tidy for Mac OS X (vers 31 October 2006 - Apple Inc. build 10705), see www.w3.org" />
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
+
   <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+/*<![CDATA[*/
+  code{white-space: pre;}
+  /*]]>*/
+  </style>
 </head>
+
 <body>
-<h1 id="what-this-is">What This Is</h1>
-<p>This is a fork of <a href="https://www.openssl.org">OpenSSL</a> to enable QUIC. In addition to the website, the official source distribution is at <a href="https://github.com/openssl/openssl" class="uri">https://github.com/openssl/openssl</a>. The OpenSSL <code>README</code> can be found at <a href="README-OpenSSL.md" class="uri">README-OpenSSL.md</a>.</p>
-<p>This fork adds an API that can be used by QUIC implementations for connection handshakes. Quoting the IETF Working group <a href="https://datatracker.ietf.org/wg/quic/about/">charter</a>, QUIC is a &quot;UDP-based, stream-multiplexing, encrypted transport protocol.&quot; If you don't need QUIC, you should use the official OpenSSL distributions.</p>
-<p>The API's here are used by Microsoft's <a href="https://github.com/microsoft/msquic">MsQuic</a>, and Google's <a href="https://chromium.googlesource.com/chromium/src/+/master/net/quic/">Chromium QUIC</a>, and others.</p>
-<p>We are not in competition with OpenSSL project.
-We informed them of our plans to fork the code before we went public.
-We do not speak for the OpenSSL project.
-They have since <a href=
-"https://www.mail-archive.com/openssl-project@openssl.org/msg02585.html">announced their plans</a>
-to do their own QUIC implementation, now that the 3.0 release is done.
-<p>There is a community need for a QUIC capable TLS library, for both the 3.0 and 1.1 streams.
-This fork is intended as a stopgap solution to enable higher level frameworks and runtimes to use QUIC with the proven and reliable TLS functionality from OpenSSL. This fork will be maintained until OpenSSL officially provides reasonable support for QUIC implementations.</p>
-<p>This fork can be considered a supported version of <a href="https://github.com/openssl/openssl/pull/8797">OpenSSL PR 8797</a>. We will endeavor to track OpenSSL releases within a day or so, and there is an item below about how we'll follow their tagging.</p>
-<p>On to the questions and answers.</p>
-<h2 id="what-about-branches">What about branches?</h2>
-<p>We don't want to conflict with OpenSSL branch names. Our plan is to append <code>+quic</code> to upstream tag names to create our branches. Release tags will be the upstream tag name with <code>-quic1</code> appended (where <code>1</code> will be the incrementing release number). For example, the OpenSSL tag <code>openssl-3.0.10</code> would have a branch named <code>openssl-3.0.10+quic</code> and a first release tag of <code>openssl-3.0.10-quic1</code>. Please note that this is <i>not</i> compatible with semantic versioning, as any version with a <code>-value</code> suffix is sorted before the version (i.e. <code>openssl-3.0.10-quic1</code> &lt; <code>openssl-3.0.10</code>). Using a <code>+</code> can remediate this, but some release tools don't like the <code>+</code>.</p>
-<h2 id="how-are-you-keeping-current-with-openssl">How are you keeping current with OpenSSL?</h2>
-<p>(In other words, &quot;What about rebasing?&quot;)</p>
-<p>Our plan is to always rebase on top of an upstream release tag. In particular:</p>
-<ul>
-<li>The changes for QUIC will always be at the tip of the branch -- you will know what is from the original OpenSSL and what is for QUIC.</li>
-<li>New versions are quickly created once upstream creates a new tag.</li>
-<li>The use of git commands (such as <code>cherry</code>) can be used to ensure that all changes have moved forward with minimal or no changes. You will be able to see &quot;QUIC: Add X&quot; on all branches and the commit itself will be nearly identical on all branches, and any changes to that can be easily identified.</li>
-</ul>
-<h2 id="what-about-library-names">What about library names?</h2>
-<p>Library names will be the same, but will use a different version number. The version numbers for the current OpenSSL libraries are <code>1.1</code> (for the 1.1.0 and 1.1.1 branches) and <code>3</code> (for the 3.0 branch). We will be prefixing 81 (ASCII for 'Q') to the version numbers to generate a unique version number.</p>
-<ul>
-<li>libcrypto.so.81.3 vs libcrypto.so.3</li>
-<li>libcrypto.so.81.1.1 vs libcrypto.so.1.1</li>
-<li>libssl.so.81.3 vs libssl.so.3</li>
-<li>libssl.so.81.1.1 vs libsslo.so.1.1</li>
-</ul>
-<p>The SONAME of these libraries are all different, guaranteeing the correct library will be used.</p>
-<h2 id="and-the-executable">...and the executable?</h2>
-<p>We currently do not have any plans to change the name, mainly because we haven't made any changes there. If you see a need, please open an issue.</p>
-<p>The <code>openssl version</code> command will report that it is <code>+quic</code> enabled.</p>
-<h2 id="and-fips">...and FIPS?</h2>
-<p>We are not doing anything with FIPS. This is actually good news: you should be able to load the OpenSSL 3.0 FIPS module into an application built against this fork and everything should Just Work™.</p>
-<h2 id="how-can-i-contribute">How can I contribute?</h2>
-<p>We want any code here to be acceptable to OpenSSL. This means that all contributors must have signed the appropriate <a href="https://www.openssl.org/policies/cla.html">contributor license agreements</a>. We will not ask for copies of any paperwork, you just need to tell us that you've done so (and we might verify with OpenSSL). We are only interested in making it easier and better for at least the mentioned QUIC implementations to use a variant of OpenSSL. If you have a pull request that changes the TLS protocol, or adds assembly support for a new CPU, or otherwise is not specific to enabling QUIC, please contribute that to OpenSSL. This fork is intended to be a clean extension to OpenSSL, with the deltas being specific to QUIC.</p>
-<h2 id="who-are-you">Who are you?</h2>
-<p>This is a collaborative effort between <a href="https://www.akamai.com">Akamai</a> and <a href="https://www.microsoft.com">Microsoft</a>. We welcome anyone to contribute!</p>
+  <h1>What This Is</h1>
+
+  <p>This is a fork of the <a href=
+  "https://www.openssl.org">OpenSSL library</a>. It started as a
+  project to only enable QUIC, but as time went on, we believe
+  OpenSSL strayed further from what their bulk of their community
+  wants. As such, this has evolved into a a full-fledged fork of
+  OpenSSL. We are already closely collaborating with the other two
+  major forks, BoringSSL and Libre, and our longer-range plan is to
+  turn this over into a viable Apache Software Foundation
+  project.</p>
+
+  <p>This project <em>enables</em> QUIC, it does not
+  <em>implement</em> it. The API's were first developed by Google
+  and are now in widespread use, including Microsoft's <a href=
+  "https://github.com/microsoft/msquic">MsQuic</a>, Google's
+  <a href=
+  "https://chromium.googlesource.com/chromium/src/+/master/net/quic/">
+  Chromium QUIC</a>, and others.</p>
+
+  <p>You can find a more minimal set of patches -- just providing
+  the QUIC API -- at our <a
+     href="https://github.com/quictls/openssl">OpenSSL repository</a>.
+  That covers their 1.1 release and the 3.0 stream up through 3.2.
+  The software here is based on the OpenSSL 3.3 release.</p>
+
+  <h1>On to the questions and answers.</h1>
+
+  <h2>What about branches?</h2>
+
+  <p>We don't want to conflict with OpenSSL branch names. Our
+  previous plan was to append <code>+quic</code> to upstream tag
+  names to create our branches. Now that we are indpendant of
+  OpenSSL we will need to think about this.</p>
+
+  <h2>How are you keeping current with OpenSSL?</h2>
+
+  <p>We will cherry-pick security and other important fixes from
+  OpenSSL mainline as they appear. If you see a particular PR of
+  theirs that is important to you, please <a href=
+  "https://github.com/quictls/quictls/issues">open an
+  issue</a>.</p>
+
+  <h2>What about library names?</h2>
+
+  <p>Library names will be the same, but might use a different
+  version number eventually. The version numbers for the current
+  OpenSSL libraries are <code>3</code> (for the 3.0 branch). We
+  will be prefixing 81 (ASCII for 'Q') to the version numbers to
+  generate a unique version number.</p>For example:
+
+  <ul>
+    <li>libcrypto.so.81.3 vs libcrypto.so.3</li>
+
+    <li>libcrypto.so.81.1.1 vs libcrypto.so.1.1</li>
+
+    <li>libssl.so.81.3 vs libssl.so.3</li>
+
+    <li>libssl.so.81.1.1 vs libsslo.so.1.1</li>
+  </ul>
+
+  <p>The SONAME of these libraries are all different, guaranteeing
+  the correct library will be used.</p>
+
+  <h2>...and the executable?</h2>
+
+  <p>We currently do not have any plans to change the name, for
+  compatibility.</p>
+
+  <p>The <code>openssl version</code> command will report that it
+  is <code>+quic</code> enabled.</p>
+
+  <h2>...and FIPS?</h2>
+
+  <p>We are not doing anything with FIPS. This is actually good
+  news: you should be able to load the OpenSSL 3 FIPS module into
+  an application built against this fork and everything should Just
+  Work.</p>
+
+  <h2>How can I contribute?</h2>
+
+  <p>We want any code here to be acceptable to OpenSSL. For now,
+  our PR requires a checkbox saying you are authorizing
+  the contribution under the terms of the ASF license. You might
+  want to think about signing the appropriate <a href=
+  "https://www.openssl.org/policies/cla.html">OpenSSL contributor license
+  agreements</a>.
+  We want this code to be usable by any and all forks, should they
+  desire.</p>
+
+  <h2>Who are you?</h2>
+
+  <p>This is a collaborative effort between <a href=
+  "https://www.akamai.com">Akamai</a> and <a href=
+  "https://www.microsoft.com">Microsoft</a>. We welcome anyone to
+  contribute!</p>To learn more about HTML Tidy see
+  http://tidy.sourceforge.net Please send bug reports to
+  html-tidy@w3.org HTML and CSS specifications are available from
+  http://www.w3.org/ Lobby your company to join W3C, see
+  http://www.w3.org/Consortium
 </body>
 </html>
+
+To learn more about HTML Tidy see http://tidy.sourceforge.net
+Please send bug reports to html-tidy@w3.org
+HTML and CSS specifications are available from http://www.w3.org/
+Lobby your company to join W3C, see http://www.w3.org/Consortium
